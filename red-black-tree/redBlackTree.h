@@ -199,18 +199,7 @@ private:
       return mod;
     }
 
-    void modify(int version, int field_type, COLOR color, Node *pointer)
-    {
-      if (this->is_null)
-        return;
-      Node *node = this;
-
-      while (node->next != nullptr)
-        node = node->next;
-
-      int size = node->mods.size();
-      if (size == 6)
-      {
+    Node* make_copy(Node *node, int version){
         Node *node_copy = new Node(node->value, node->color, node->left, node->right, node->parent);
         node_copy->is_null = false;
 
@@ -262,7 +251,21 @@ private:
             node_copy->return_parent->modify(version, 2, BLACK, node_copy);
         }
 
-        node = node_copy;
+        return node_copy;
+    }
+
+    void modify(int version, int field_type, COLOR color, Node *pointer)
+    {
+      if (this->is_null)
+        return;
+      Node *node = this;
+
+      while (node->next != nullptr)
+        node = node->next;
+
+      if (node->mods.size() == 6)
+      {
+        node = make_copy(node, version);
       }
 
       Mod mod = node->create_mod(version, field_type, color, pointer);
@@ -291,28 +294,28 @@ private:
     return root;
   }
 
-  void print_helper(Node *node, int version)
-  {
-    if (node->is_null)
-      return;
+  // void print_helper(Node *node, int version)
+  // {
+  //   if (node->is_null)
+  //     return;
 
-    cout << "value: " << node->value << " color: " << node->get_color(version, BLACK) << ' ';
-    if (!node->get_left(version, nullptr)->is_null)
-      cout << "left child: " << node->get_left(version, nullptr)->value << ' ';
-    else
-      cout << "left child: " << "null" << ' ';
-    if (!node->get_right(version, nullptr)->is_null)
-      cout << "right child: " << node->get_right(version, nullptr)->value << ' ';
-    else
-      cout << "right child: " << "null" << ' ';
-    if (node->get_parent(version, nullptr) != nullptr)
-      cout << "parent child: " << node->get_parent(version, nullptr)->value << endl;
-    else
-      cout << "parent child: " << "null" << endl;
+  //   cout << "value: " << node->value << " color: " << node->get_color(version, BLACK) << ' ';
+  //   if (!node->get_left(version, nullptr)->is_null)
+  //     cout << "left child: " << node->get_left(version, nullptr)->value << ' ';
+  //   else
+  //     cout << "left child: " << "null" << ' ';
+  //   if (!node->get_right(version, nullptr)->is_null)
+  //     cout << "right child: " << node->get_right(version, nullptr)->value << ' ';
+  //   else
+  //     cout << "right child: " << "null" << ' ';
+  //   if (node->get_parent(version, nullptr) != nullptr)
+  //     cout << "parent child: " << node->get_parent(version, nullptr)->value << endl;
+  //   else
+  //     cout << "parent child: " << "null" << endl;
 
-    print_helper(node->get_left(version, nullptr), version);
-    print_helper(node->get_right(version, nullptr), version);
-  }
+  //   print_helper(node->get_left(version, nullptr), version);
+  //   print_helper(node->get_right(version, nullptr), version);
+  // }
 
   void right_rotate(Node *node, int version)
   {
@@ -549,22 +552,22 @@ public:
     return op;
   }
 
-  void print()
-  {
-    Node *node = get_root(this->current_version);
-    print_helper(node, this->current_version);
-  }
+  // void print()
+  // {
+  //   Node *node = get_root(this->current_version);
+  //   print_helper(node, this->current_version);
+  // }
 
-  void print(int version)
-  {
-    Node *node = get_root(version);
-    print_helper(node, version);
-  }
+  // void print(int version)
+  // {
+  //   Node *node = get_root(version);
+  //   print_helper(node, version);
+  // }
 
-  void print(Operator op, int version)
-  {
-    print_helper(op.node, version);
-  }
+  // void print(Operator op, int version)
+  // {
+  //   print_helper(op.node, version);
+  // }
 
   void print_to_file(int version, ofstream &file)
   {
