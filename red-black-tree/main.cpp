@@ -1,9 +1,9 @@
 #include <iostream>
-#include <stdio.h>
+#include <cstdio>
+#include <cstring>
 #include <vector>
 #include <fstream>
 #include <sstream>
-#include <string.h>
 #include "redBlackTree.h"
 #define INFINITY 999999999;
 

@@ -1,9 +1,9 @@
 #include <iostream>
-#include <stdio.h>
+#include <cstdio>
+#include <cstring>
 #include <vector>
 #include <fstream>
 #include <sstream>
-#include <string.h>
 #define INFINITY 999999999;
 
 using namespace std;
@@ -14,36 +14,63 @@ enum COLOR
   RED
 };
 
-
-class RedBlackTree{
+class RedBlackTree
+{
 private:
-  typedef struct Node{
+  struct Node
+  {
     int value;
     COLOR color;
     Node *left;
     Node *right;
     Node *parent;
+    Node *return_left;
+    Node *return_right;
+    Node *return_parent;
+    Node *next = nullptr;
 
     bool is_null = true;
+
+    Node() {}
+    Node(int value, COLOR color, Node *left, Node *right, Node *parent) : value(value), color(color), left(left), right(right), parent(parent) {}
+
+
+    struct Mod
+    {
+      Node *left;
+      Node *right;
+      Node *parent;
+      COLOR color;
+      int version;
+
+      int type_field;
+    };
+
+    vector<Mod> mods;
+
 
     COLOR get_color(int version, COLOR color)
     {
       if (this->is_null)
         return color;
 
-      color = color == BLACK ? this->color : color;
+      color = (color == BLACK ? this->color : color); //
 
       if (this->mods.empty())
         return color;
 
       for (Mod m : this->mods)
+      {
         if (m.type_field == 0 && m.version <= version)
           color = m.color;
+      }
 
       if (this->mods.back().version > version)
         return color;
+
       if (this->next != nullptr)
         return this->next->get_color(version, color);
+        
       return color;
     }
 
@@ -52,7 +79,7 @@ private:
       if (this->is_null)
         return this;
 
-      left = left == nullptr ? this->left : left;
+      left = (left == nullptr ? this->left : left);
 
       if (this->mods.empty())
         return left;
@@ -73,7 +100,7 @@ private:
       if (this->is_null)
         return this;
 
-      right = right == nullptr ? this->right : right;
+      right = (right == nullptr ? this->right : right);
 
       if (this->mods.empty())
         return right;
@@ -86,6 +113,7 @@ private:
         return right;
       if (this->next != nullptr)
         return this->next->get_right(version, right);
+
       return right;
     }
 
@@ -94,7 +122,7 @@ private:
       if (this->is_null)
         return this;
 
-      parent = parent == nullptr ? this->parent : parent;
+      parent = (parent == nullptr ? this->parent : parent);
 
       if (this->mods.empty())
         return parent;
@@ -140,32 +168,10 @@ private:
       return this->value == this->get_parent(version, nullptr)->get_right(version, nullptr)->value;
     }
 
-    typedef struct Mod
-    {
-      Node *left;
-      Node *right;
-      Node *parent;
-      COLOR color;
-      int version;
-
-      int type_field;
-    } Mod;
-
-    vector<Mod> mods;
-
-    Node() {}
-    Node(int value, COLOR color, Node *left, Node *right, Node *parent) : value(value), color(color), left(left), right(right), parent(parent) {}
-
-    Node *return_left;
-    Node *return_right;
-    Node *return_parent;
-
-    Node *next = nullptr;
 
     Mod create_mod(int version, int field, COLOR color, Node *pointer)
     {
       Mod mod = {this->left, this->right, this->parent, this->color, version, field};
-
       if (field == 0)
       {
         mod.color = color;
@@ -262,7 +268,7 @@ private:
       Mod mod = node->create_mod(version, field_type, color, pointer);
       node->mods.emplace_back(mod);
     }
-  } Node;
+  };
 
   Node *root;
   vector<pair<Node *, int>> roots;
@@ -493,19 +499,22 @@ private:
     node->modify(this->current_version, 0, BLACK, nullptr);
   }
 
+
 public:
   Node nil;
 
   RedBlackTree() : root(nullptr) {};
-  class Data
+  class Operator
   {
   private:
     Node *node;
     friend RedBlackTree;
 
   public:
-    bool operator==(Data d) { return node == d.node; }
-    bool operator!=(Data d) { return node != d.node; }
+    bool operator==(Operator op) { return node == op.node; }
+    bool operator!=(Operator op) { return node != op.node; }
+
+
     Node *successor(Node *n, int version)
     {
       if (n == nullptr)
@@ -525,7 +534,7 @@ public:
       }
     }
 
-    Data(Node *node) : node(node) {}
+    Operator(Node *node) : node(node) {}
     int value() { return node->value; }
   };
 
@@ -534,10 +543,10 @@ public:
     return this->current_version;
   }
 
-  Data null()
+  Operator null()
   {
-    Data d(nullptr);
-    return d;
+    Operator op(nullptr);
+    return op;
   }
 
   void print()
@@ -552,9 +561,9 @@ public:
     print_helper(node, version);
   }
 
-  void print(Data d, int version)
+  void print(Operator op, int version)
   {
-    print_helper(d.node, version);
+    print_helper(op.node, version);
   }
 
   void print_to_file(int version, ofstream &file)
@@ -602,7 +611,7 @@ public:
     }
   }
 
-  Data insert(int value)
+  Operator insert(int value)
   {
     Node *node = new (nothrow) Node;
     if (node == nullptr)
@@ -663,15 +672,15 @@ public:
       insert_fix(node, this->current_version);
     }
 
-    Data d(node);
-    return d;
+    Operator op(node);
+    return op;
   }
 
-  Data search(int value, int version)
+  Operator search(int value, int version)
   {
     Node *node = search_helper(get_root(version), value, version);
-    Data d(node);
-    return d;
+    Operator op(node);
+    return op;
   }
 
   Node *search_successor(Node *node, int value, int version)
@@ -695,8 +704,8 @@ public:
     }
     if (node->value == value)
     {
-      Data d(node);
-      return d.successor(node, version);
+      Operator op(node);
+      return op.successor(node, version);
     }
 
     if (node->value < value)
@@ -718,43 +727,43 @@ public:
 
   void remove(int value)
   {
-    Data d = search(value, this->current_version);
-    Node *node = d.node;
-    if (d.node == nullptr)
+    Operator op = search(value, this->current_version);
+    Node *node = op.node;
+    if (op.node == nullptr)
       return;
     COLOR original_color = node->color;
     Node *aux;
 
     this->current_version++;
 
-    if (d.node->get_left(this->current_version, nullptr)->is_null)
+    if (op.node->get_left(this->current_version, nullptr)->is_null)
     {
-      aux = d.node->get_right(this->current_version, nullptr);
-      transplant(d.node, d.node->get_right(this->current_version, nullptr), this->current_version);
+      aux = op.node->get_right(this->current_version, nullptr);
+      transplant(op.node, op.node->get_right(this->current_version, nullptr), this->current_version);
     }
-    else if (d.node->get_right(this->current_version, nullptr)->is_null)
+    else if (op.node->get_right(this->current_version, nullptr)->is_null)
     {
-      aux = d.node->get_left(this->current_version, nullptr);
-      transplant(d.node, d.node->get_left(this->current_version, nullptr), this->current_version);
+      aux = op.node->get_left(this->current_version, nullptr);
+      transplant(op.node, op.node->get_left(this->current_version, nullptr), this->current_version);
     }
     else
     {
-      node = d.successor(d.node, this->current_version);
+      node = op.successor(op.node, this->current_version);
       original_color = node->get_color(this->current_version, BLACK);
       aux = node->get_right(this->current_version, nullptr);
 
-      if (node->get_parent(this->current_version, nullptr)->value == d.node->value)
+      if (node->get_parent(this->current_version, nullptr)->value == op.node->value)
         aux->modify(this->current_version, 3, BLACK, node);
       else
       {
         transplant(node, node->get_right(this->current_version, nullptr), this->current_version);
-        node->modify(this->current_version, 2, BLACK, d.node->get_right(this->current_version, nullptr));
+        node->modify(this->current_version, 2, BLACK, op.node->get_right(this->current_version, nullptr));
         node->get_right(this->current_version, nullptr)->modify(this->current_version, 3, BLACK, node);
       }
-      transplant(d.node, node, this->current_version);
-      node->modify(this->current_version, 1, BLACK, d.node->get_left(this->current_version, nullptr));
+      transplant(op.node, node, this->current_version);
+      node->modify(this->current_version, 1, BLACK, op.node->get_left(this->current_version, nullptr));
       node->get_left(this->current_version, nullptr)->modify(this->current_version, 3, BLACK, node);
-      node->modify(this->current_version, 0, d.node->get_color(this->current_version, BLACK), nullptr);
+      node->modify(this->current_version, 0, op.node->get_color(this->current_version, BLACK), nullptr);
     }
     if (original_color == COLOR::BLACK)
       remove_fix(aux, this->current_version);
