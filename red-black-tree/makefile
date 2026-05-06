@@ -1,5 +1,5 @@
 build: 
-	g++ -Wall -g main.cpp -o main -Wfatal-errors
+	g++ -g main.cpp -o main -Wfatal-errors
 
 run:
 	./main $(ARGS)
