@@ -9,10 +9,10 @@
 
 using namespace std;
 
-int main(void)
+int main(int argc, char** argv)
 {
   RedBlackTree rbtree;
-  string file_name = "test/1.txt";
+  string file_name = argv[1];
   ifstream file(file_name);
   ofstream output_file("out.txt");
 
