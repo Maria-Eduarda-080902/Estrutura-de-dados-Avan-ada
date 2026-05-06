@@ -541,11 +541,6 @@ public:
     int value() { return node->value; }
   };
 
-  int get_last_version()
-  {
-    return this->current_version;
-  }
-
   Operator null()
   {
     Operator op(nullptr);
