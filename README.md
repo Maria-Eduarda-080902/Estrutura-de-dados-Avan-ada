@@ -36,18 +36,30 @@ RedBlackTree é a classe principal que engloba toda a lógica do programa.
  - **Métodos**
     - create_root: Cria um novo par para a raíz e inclui na última posição do histórico
     - get_root: Cria a variável auxiliar root para controle. Confere se o tamanho do histórico da raíz é maior do que um. Se sim, percorre o histórico até encontrar a raíz e atribuí-la à variável root. Se não for maior do que um, atribui o valor da raíz do nó à variável root. No fim, retorna a variável root.
-    - left_rotate
-    - right_rotate
-    - remove_fix
-    - insert_fix
-    - transplant
-    - insert
-    - search
-    - search_helper
-    - search_successor
-    - get_successor
-    - remove
-    - print_to_file
+
+    - left_rotate: Recebe um nó e a versão. Realiza a rotação à esquerda utilizando o método modify para atualizar o filho direito do nó e o filho esquerdo do pivô (aux). Se o nó original era a raiz, registra o pivô como a nova raiz da versão via create_root; caso contrário, atualiza o pai do nó para apontar para o pivô.
+
+    - right_rotate: Executa o inverso da rotação à esquerda. O filho esquerdo do nó torna-se o novo pivô. A função utiliza o modify para redefinir as conexões de parentesco e descendência, garantindo que a rotação seja registrada no histórico da versão atual sem destruir os estados anteriores.
+
+    - insert_fix: Função recursiva que corrige violações rubro-negras após uma inserção. Analisa a cor do "tio" do nó atual através de get_uncle. Dependendo do caso (recoloração ou rotações), dispara o método modify para alterar cores e as funções de rotação para reestruturar a árvore na versão atual.
+
+    - remove_fix: Restaura o equilíbrio da árvore após a remoção de um nó preto. Percorre a estrutura corrigindo o déficit de cor preta através de recolorações e rotações nos nós irmãos (right_child ou left_child), registrando cada ajuste de cor e ponteiro no vetor de modificações (mods) dos nós envolvidos.
+
+    - transplant: Auxilia a substituição de uma subárvore por outra dentro de uma versão. Atualiza o pai do nó removido para apontar para o substituto e ajusta o ponteiro de pai do substituto via modify. Se o nó removido for a raiz, registra o substituto como a nova raiz da versão.
+
+    - insert: Incrementa a versão atual e cria um novo nó vermelho. Realiza a busca binária para encontrar o local de inserção. Ao encontrar, utiliza o modify no nó pai para conectar o novo filho e, por fim, chama o insert_fix para validar as propriedades da árvore.
+
+    - remove: Inicia incrementando a versão e buscando o nó alvo via search. Se o nó tiver dois filhos, localiza o sucessor para substituição. Utiliza a função transplant para reorganizar a estrutura e, caso a cor original do nó movido seja preta, executa o remove_fix.
+
+    - search: Interface pública que obtém a raiz da versão desejada através de get_root e inicia a busca chamando o search_helper.
+
+    - search_helper: Função recursiva de busca binária. Navega pelos nós comparando valores, utilizando get_left e get_right com o parâmetro de versão para garantir que a navegação respeite os ponteiros válidos naquele tempo específico.
+
+    - search_successor: Localiza o nó com o menor valor que seja maior que o valor de referência na versão informada. Percorre a árvore até encontrar o valor e então aplica as regras de sucessor (mínimo da subárvore direita ou ancestral à esquerda).
+
+    - get_successor: Função de conveniência que retorna o valor inteiro do nó encontrado por search_successor. Se o sucessor não existir na versão informada, retorna a constante INFINITY.
+
+    - print_to_file: Realiza um percurso em ordem (in-order) na árvore de uma versão específica. Percorre os nós do menor para o maior, calculando a profundidade e identificando a cor (R ou B) através de get_color. Os dados (valor, profundidade e cor) são formatados e enviados simultaneamente para o console e para um arquivo externo.
     
 
 #### Operator
@@ -55,7 +67,7 @@ RedBlackTree é a classe principal que engloba toda a lógica do programa.
 Operator é uma subclasse da classe RedBlackTree, que serve como wrapper para a complexidade da classe. Permite que os dados sejam acessados com segurança.
  - **Métodos**
     - value: retorna o valor numérico do nó.
-    - successor: 
+    - successor: Recebe um ponteiro de nó e a versão desejada. O método identifica o sucessor do nó atual na hierarquia da árvore rubro-negra para aquela versão específica. Se o nó possuir uma subárvore direita, ele busca o valor mínimo dessa árvore; caso contrário, ele sobe na hierarquia para encontrar o primeiro ancestral à direita, retornando o próximo nó em ordem crescente ou nullptr se o nó for o maior da árvore.
 
 
 ### Structs
