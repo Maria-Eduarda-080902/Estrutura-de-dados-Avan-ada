@@ -584,8 +584,10 @@ public:
         c = 'R';
       else
         c = 'B';
-      file << node->value << ',' << depth << ',' << c << ' ';
-      cout << node->value << ',' << depth << ',' << c << ' ';
+
+      string output = to_string(node->value) + ',' + to_string(depth) + ',' + c + ' ';
+      file << output;
+      cout << output;
 
       if (!node->get_right(version, nullptr)->is_null)
       { // Caso n tenha sub-árvore direita, o sucessor é o mínimo dessa árvore
