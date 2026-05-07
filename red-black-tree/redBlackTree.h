@@ -294,28 +294,28 @@ private:
     return root;
   }
 
-  // void print_helper(Node *node, int version)
-  // {
-  //   if (node->is_null)
-  //     return;
+  void print_helper(Node *node, int version)
+  {
+    if (node->is_null)
+      return;
 
-  //   cout << "value: " << node->value << " color: " << node->get_color(version, BLACK) << ' ';
-  //   if (!node->get_left(version, nullptr)->is_null)
-  //     cout << "left child: " << node->get_left(version, nullptr)->value << ' ';
-  //   else
-  //     cout << "left child: " << "null" << ' ';
-  //   if (!node->get_right(version, nullptr)->is_null)
-  //     cout << "right child: " << node->get_right(version, nullptr)->value << ' ';
-  //   else
-  //     cout << "right child: " << "null" << ' ';
-  //   if (node->get_parent(version, nullptr) != nullptr)
-  //     cout << "parent child: " << node->get_parent(version, nullptr)->value << endl;
-  //   else
-  //     cout << "parent child: " << "null" << endl;
+    cout << "value: " << node->value << " color: " << node->get_color(version, BLACK) << ' ';
+    if (!node->get_left(version, nullptr)->is_null)
+      cout << "left child: " << node->get_left(version, nullptr)->value << ' ';
+    else
+      cout << "left child: " << "null" << ' ';
+    if (!node->get_right(version, nullptr)->is_null)
+      cout << "right child: " << node->get_right(version, nullptr)->value << ' ';
+    else
+      cout << "right child: " << "null" << ' ';
+    if (node->get_parent(version, nullptr) != nullptr)
+      cout << "parent child: " << node->get_parent(version, nullptr)->value << endl;
+    else
+      cout << "parent child: " << "null" << endl;
 
-  //   print_helper(node->get_left(version, nullptr), version);
-  //   print_helper(node->get_right(version, nullptr), version);
-  // }
+    print_helper(node->get_left(version, nullptr), version);
+    print_helper(node->get_right(version, nullptr), version);
+  }
 
   void right_rotate(Node *node, int version)
   {
@@ -541,28 +541,30 @@ public:
     int value() { return node->value; }
   };
 
+
+
   Operator null()
   {
     Operator op(nullptr);
     return op;
   }
 
-  // void print()
-  // {
-  //   Node *node = get_root(this->current_version);
-  //   print_helper(node, this->current_version);
-  // }
+  void print()
+  {
+    Node *node = get_root(this->current_version);
+    print_helper(node, this->current_version);
+  }
 
-  // void print(int version)
-  // {
-  //   Node *node = get_root(version);
-  //   print_helper(node, version);
-  // }
+  void print(int version)
+  {
+    Node *node = get_root(version);
+    print_helper(node, version);
+  }
 
-  // void print(Operator op, int version)
-  // {
-  //   print_helper(op.node, version);
-  // }
+  void print(Operator op, int version)
+  {
+    print_helper(op.node, version);
+  }
 
   void print_to_file(int version, ofstream &file)
   {
@@ -583,6 +585,7 @@ public:
       else
         c = 'B';
       file << node->value << ',' << depth << ',' << c << ' ';
+      cout << node->value << ',' << depth << ',' << c << ' ';
 
       if (!node->get_right(version, nullptr)->is_null)
       { // Caso n tenha sub-árvore direita, o sucessor é o mínimo dessa árvore

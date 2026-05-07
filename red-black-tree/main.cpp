@@ -28,14 +28,14 @@ int main(int argc, char** argv)
       {
         int number;
         iss >> number;
-        // cout << "INC " << number << endl;
+        cout << "INC " << number << endl;
         rbtree.insert(number);
       }
       else if (command == "REM")
       {
         int number;
         iss >> number;
-        // cout << "REM "<<number<<endl;
+        cout << "REM "<<number<<endl;
         rbtree.remove(number);
       }
       else if (command == "SUC")
@@ -43,7 +43,7 @@ int main(int argc, char** argv)
         int number;
         int version;
         iss >> number >> version;
-        // cout << "SUC " << number << " " << version << endl;
+        cout << "SUC " << number << " " << version << endl;
         output_file << "SUC " << number << " " << version << endl
                     << rbtree.get_successor(number, version) << endl;
       }
@@ -51,7 +51,7 @@ int main(int argc, char** argv)
       {
         int version;
         iss >> version;
-        // cout << "IMP " << version << endl;
+        cout << "IMP " << version << endl;
         output_file << "IMP " << version << endl;
 
         rbtree.print_to_file(version, output_file);
